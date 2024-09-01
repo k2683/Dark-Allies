@@ -47,6 +47,8 @@ GameObject:
   - component: {fileID: 5703569150017594686}
   - component: {fileID: 7677033436343838635}
   - component: {fileID: 3413111409542427632}
+  - component: {fileID: 4008094731997546185}
+  - component: {fileID: 1114497590849733115}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -63,7 +65,7 @@ Transform:
   m_GameObject: {fileID: 72501710907742419}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 11.57, y: 18.799, z: 5.456988}
+  m_LocalPosition: {x: 2.3, y: 20, z: -2.55}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -81,10 +83,10 @@ Animator:
   m_GameObject: {fileID: 72501710907742419}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 5c5442278a1750345a77fd12a66250a6, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 22c25e816db78924d830b522f5b0cfab, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -126,6 +128,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charactercontroller: {fileID: 0}
+  animator: {fileID: 0}
+  characternetworkmanager: {fileID: 0}
+  isPerformingActions: 0
+  canRotate: 0
+  canMove: 0
+  applyRootMotion: 0
+  playerAnimatorManager: {fileID: 0}
+  playerLocomotionManager: {fileID: 0}
+  playerNetworkManager: {fileID: 0}
 --- !u!114 &5703569150017594686
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,10 +150,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   horizontalMovement: 0
-  verticallMovement: 0
+  verticalMovement: 0
   moveAmount: 0
   walkingSpeed: 2
   runnningSpeed: 5
+  sprintingSpeed: 8
+  rotationSpeed: 15
 --- !u!143 &7677033436343838635
 CharacterController:
   m_ObjectHideFlags: 0
@@ -164,8 +177,8 @@ CharacterController:
   serializedVersion: 3
   m_Height: 24
   m_Radius: 2
-  m_SlopeLimit: 45
-  m_StepOffset: 2
+  m_SlopeLimit: 30
+  m_StepOffset: 0.02
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 11, z: 0}
@@ -183,8 +196,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkPosition:
     m_InternalValue: {x: 0, y: 0, z: 0}
+  networkRotation:
+    m_InternalValue: {x: 0, y: 0, z: 0, w: 1}
   networkPositionVelocity: {x: 0, y: 0, z: 0}
   networkPositionSmoothTime: 0.1
+  networkRotationSmoothTime: 0.1
+  horizontalMovement:
+    m_InternalValue: 0
+  verticalMovement:
+    m_InternalValue: 0
+  moveAmount:
+    m_InternalValue: 0
+  isSprinting:
+    m_InternalValue: 0
+--- !u!114 &4008094731997546185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72501710907742419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1d5e1a02055986489f559d85ee99c57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1114497590849733115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 72501710907742419}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89de1ac12a42ea74ab49cee01d17284a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &89158736755890009
 GameObject:
   m_ObjectHideFlags: 0

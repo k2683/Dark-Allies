@@ -8,13 +8,21 @@ namespace BL
 {
     public class CharacterManager : NetworkBehaviour
     {
-        public CharacterController charactercontroller;
-        CharacterNetworkManager characternetworkmanager;
+        [HideInInspector] public CharacterController charactercontroller;
+        [HideInInspector] public Animator animator;
+        [HideInInspector] public CharacterNetworkManager characternetworkmanager;
+
+        [Header("Flags")]
+        public bool isPerformingActions = false;
+        public bool canRotate = true;
+        public bool canMove = true;
+        public bool applyRootMotion = false;
         protected virtual void Awake()
         {
             DontDestroyOnLoad(this);
             charactercontroller = GetComponent<CharacterController>();
             characternetworkmanager= GetComponent<CharacterNetworkManager>();
+            animator = GetComponent<Animator>();
         }
         protected virtual void Update()
         {
@@ -36,5 +44,11 @@ namespace BL
                     characternetworkmanager.networkRotationSmoothTime);
             }
         }
+        protected virtual void LateUpdate()
+        {
+
+        }
+
+
     }
 }

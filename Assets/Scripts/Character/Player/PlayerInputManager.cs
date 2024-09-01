@@ -9,10 +9,23 @@ namespace BL
     {
         public static PlayerInputManager instance;
         PlayerControls playerControls;
-        [SerializeField] Vector2 movement;
+        public PlayerManager player;
+
+        [Header("Player Movement input")]
+        [SerializeField] Vector2 movementInput;
         public float horizontalInput;
         public float verticalInput;
         public float moveAmount;
+
+
+        [Header("Camera Movement input")]
+        [SerializeField] Vector2 cameraInput;
+        public float cameraHorizontalInput;
+        public float cameraVerticalInput;
+
+        [Header("Player Action Input")]
+        [SerializeField] bool dodgeInput = false;
+        [SerializeField] bool sprintInput = false;
         private void Awake()
         {
             if (instance == null)
@@ -26,7 +39,7 @@ namespace BL
         }
         private void OnSceneChange(Scene oldscene,Scene newScene)
         {
-            if(newScene.buildIndex==WorldSaveGameManager.instance.GetWorldSceneIndex())
+            if(newScene.buildIndex==WorldSaveGameManager.Instance.GetWorldSceneIndex())
             {
                 instance.enabled = true;    
             }
@@ -45,7 +58,7 @@ namespace BL
         }
         private void Update()
         {
-            HandleMovementInput();
+            HandleAllInputs();
         }
         private void OnEnable()
         {
@@ -53,7 +66,14 @@ namespace BL
             {
                 playerControls=new PlayerControls();
 
-                playerControls.PlayerMovement.Movement.performed += i => movement = i.ReadValue<Vector2>();
+                playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
+                playerControls.PlayerCamera.Movement.performed += i => cameraInput = i.ReadValue<Vector2>();
+                playerControls.PlayerActions.Dodge.performed += i => dodgeInput = true;
+
+
+                playerControls.PlayerActions.Sprint.performed += i => sprintInput = true;
+                playerControls.PlayerActions.Sprint.canceled += i => sprintInput = false;
+
             }
             playerControls.Enable();
         }
@@ -61,10 +81,17 @@ namespace BL
         {
             SceneManager.activeSceneChanged -= OnSceneChange;
         }
-        private void HandleMovementInput()
+        private void HandleAllInputs()
         {
-            horizontalInput=movement.x;
-            verticalInput=movement.y;
+            HandlePlayerMovementInput();
+            HandleCameraMovementInput();
+            HandleDodgeInput();
+            HandleSprinting();
+        }
+        private void HandlePlayerMovementInput()
+        {
+            horizontalInput=movementInput.x;
+            verticalInput=movementInput.y;
             moveAmount = Mathf.Clamp01(Mathf.Abs(verticalInput) + Mathf.Abs(horizontalInput));
             if(moveAmount<0.5&&moveAmount>0)
             {
@@ -74,6 +101,12 @@ namespace BL
             {
                 moveAmount = 1.0f;
             }
+            if (player == null)
+                return;
+            //If not locked on. Only use moveAmount
+            player.playerAnimatorManager.updateAnimatorMovementParameters(0, moveAmount,player.playerNetworkManager.isSprinting.Value);
+
+            //If locked on
         }
         private void OnApplicationFocus(bool focus)
         {
@@ -87,6 +120,32 @@ namespace BL
                 {
                     playerControls.Disable();
                 }
+            }
+        }
+        private void HandleCameraMovementInput()
+        {
+            cameraVerticalInput = cameraInput.y;
+            cameraHorizontalInput = cameraInput.x;
+        }
+
+        private void HandleDodgeInput()
+        {
+            if(dodgeInput)
+            {
+
+                dodgeInput = false;
+                player.playerLocomotionManager.AttemptToPerformDodge();
+            }
+        }
+        private void HandleSprinting()
+        {
+            if(sprintInput)
+            {
+                player.playerLocomotionManager.HandleSprinting();
+            }
+            else
+            {
+                player.playerNetworkManager.isSprinting.Value = false;
             }
         }
     }

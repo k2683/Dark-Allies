@@ -10,13 +10,14 @@ namespace BL
         public static PlayerUIManager instance;
         [Header("NETWORK JOIN")]
         [SerializeField] bool startGameAsClient;
-        // Start is called before the first frame update
+        [HideInInspector] public PlayerUIHudManager playerUIHudManager;
         public void Awake()
         {
             if (instance == null)
                 instance = this;
             else
                 Destroy(gameObject);
+            playerUIHudManager = GetComponentInChildren<PlayerUIHudManager>();
         }
         private void Start()
         {
