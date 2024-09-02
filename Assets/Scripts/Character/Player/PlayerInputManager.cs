@@ -26,6 +26,7 @@ namespace BL
         [Header("Player Action Input")]
         [SerializeField] bool dodgeInput = false;
         [SerializeField] bool sprintInput = false;
+        [SerializeField] bool jumpInput = false;
         private void Awake()
         {
             if (instance == null)
@@ -69,6 +70,7 @@ namespace BL
                 playerControls.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
                 playerControls.PlayerCamera.Movement.performed += i => cameraInput = i.ReadValue<Vector2>();
                 playerControls.PlayerActions.Dodge.performed += i => dodgeInput = true;
+                playerControls.PlayerActions.Jump.performed += i => jumpInput = true;
 
 
                 playerControls.PlayerActions.Sprint.performed += i => sprintInput = true;
@@ -147,6 +149,18 @@ namespace BL
             {
                 player.playerNetworkManager.isSprinting.Value = false;
             }
+        }
+        private void HandleSprintInput()
+        {
+            if(jumpInput)
+            {
+                jumpInput = false;
+                player.playerLocomotionManager.AttemptToPerformJump();
+            }
+        }
+        private void HandleJumpInput()
+        {
+
         }
     }
 }

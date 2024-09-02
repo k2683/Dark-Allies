@@ -26,6 +26,8 @@ namespace BL
         
         [Header("Title Screen Inputs")]
         [SerializeField] bool deleteCharacterSlot = false;
+        public GameObject onSelectedDeletedSaveButton;
+        public GameObject onSelectedDeletedDeletingButton;
         private void Awake()
         {
             if (instance == null)
@@ -69,26 +71,30 @@ namespace BL
         {
             currentSelectedSlot = characterSlot;
         }
+        
         public void AttempToDeleteCharacterSlot()
         {
             if(currentSelectedSlot != CharacterSlot.NO_SLOT)
             {
                 deleteCharacterSlotPopup.SetActive(true);
-                deleteCharacterPopUpConfirmButton.Select();
-
             }
         }
         public void CloseDeleteCharacterPopUp()
         {
             deleteCharacterSlotPopup.SetActive(false);
-            loadMenuReturnButton.Select();
         }
+        
         public void DeleteCharacterSlot()
         {
             deleteCharacterSlotPopup.SetActive(false);
-            loadMenuReturnButton.Select();
             WorldSaveGameManager.Instance.DeleteGame(currentSelectedSlot);
+            onSelectedDeletedSaveButton.SetActive(false);
+            onSelectedDeletedDeletingButton.SetActive(false);
+
+
+            //onSelectedDeletedSaveButton.GameObject.SetActive(false);
         }
+
         public void SelectNoSlot()
         {
             currentSelectedSlot = CharacterSlot.NO_SLOT;

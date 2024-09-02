@@ -14,6 +14,8 @@ namespace BL
 
         [Header("Flags")]
         public bool isPerformingActions = false;
+        public bool isJumping = false;
+        public bool isGrounded = true;
         public bool canRotate = true;
         public bool canMove = true;
         public bool applyRootMotion = false;

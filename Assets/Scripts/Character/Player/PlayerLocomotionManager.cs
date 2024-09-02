@@ -21,6 +21,7 @@ namespace BL
         [Header("Dodge")]
         private Vector3 rollDirection;
         [SerializeField] float dodgeStaminaCost = 25f;
+        [SerializeField] float jumpStaminaCost = 25f;
         public void HandleAllMovement()
         {
             //if(player.isPerformingActions) 
@@ -127,6 +128,26 @@ namespace BL
                 player.playerAnimatorManager.PlayerTargetActionAnimation("Back_Step_01",true,true);
             }
             player.playerNetworkManager.currentStamina.Value -=dodgeStaminaCost;
+        }
+        public void AttemptToPerformJump()
+        {
+            if (player.isPerformingActions)
+                return;
+            if (player.playerNetworkManager.currentStamina.Value <= 0)
+                return;
+            if (player.isJumping)
+                return;
+            if(player.isGrounded)
+                return;
+            player.playerAnimatorManager.PlayerTargetActionAnimation("Main_Jump_01",false);
+
+            player.isJumping = true;
+            player.playerNetworkManager.currentStamina.Value -= jumpStaminaCost;
+
+        }
+        public void ApplyJumpingVelocity()
+        {
+
         }
         public void HandleSprinting()
         {

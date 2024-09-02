@@ -13,6 +13,7 @@ namespace BL
         [Header("Character Info")]
         public TextMeshProUGUI characterName;
         public TextMeshProUGUI timeplayed;
+        WorldSaveGameManager worldsaveGameManager;
         private void OnEnable()
         {
             LoadSaveSlot();
@@ -72,6 +73,10 @@ namespace BL
         public void SelectedCurrentSlot()
         {
             TitleScreenManager.instance.SelectedCharacterSlot(characterSlot);
+        }
+        public void DeleteSaveSlot()
+        {
+            WorldSaveGameManager.Instance.DeleteGame(characterSlot);
         }
     }
 }

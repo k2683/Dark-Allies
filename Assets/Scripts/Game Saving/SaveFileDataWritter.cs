@@ -24,7 +24,17 @@ namespace BL
         }
         public void DeleteSaveFile()
         {
-            File.Delete(Path.Combine(saveDataDirectoryPath, saveFileName));
+            //File.Delete(Path.Combine(saveDataDirectoryPath, saveFileName));
+            string filePath = Path.Combine(saveDataDirectoryPath, saveFileName);
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+            else
+            {
+                Debug.LogWarning($"File not found: {filePath}");
+            }
+
         }
         public void CreateNewCharacterSaveFile(CharacterSaveData characterData)
         {
