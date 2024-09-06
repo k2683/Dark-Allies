@@ -17,19 +17,6 @@ namespace BL
                 TitleScreenManager.instance.AttempToDeleteCharacterSlot();
             }
         }
-        /*
-        private void OnEnable()
-        {
-            if (playerControls == null)
-            {
-                playerControls = new PlayerControls();
-                playerControls.UI.RightClick.performed += i => deleteCharacterSlot = true;
-            }
-            playerControls.Enable();
-        }
-        private void OnDisable()
-        {
-            playerControls.Disable();
-        }*/
+
     }
 }

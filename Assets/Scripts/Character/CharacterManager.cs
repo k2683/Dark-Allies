@@ -8,10 +8,13 @@ namespace BL
 {
     public class CharacterManager : NetworkBehaviour
     {
+        [Header("status")]
+        public NetworkVariable<bool> isDead = new NetworkVariable<bool>(false,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
         [HideInInspector] public CharacterController charactercontroller;
         [HideInInspector] public Animator animator;
-        [HideInInspector] public CharacterNetworkManager characternetworkmanager;
-
+        [HideInInspector] public CharacterNetworkManager characterNetworkmanager;
+        [HideInInspector] public CharacterEffectsManager characterEffectsmanager;
+        [HideInInspector] public CharacterAnimatorManager characterAnimatorsmanager;
         [Header("Flags")]
         public bool isPerformingActions = false;
         public bool isJumping = false;
@@ -23,27 +26,36 @@ namespace BL
         {
             DontDestroyOnLoad(this);
             charactercontroller = GetComponent<CharacterController>();
-            characternetworkmanager= GetComponent<CharacterNetworkManager>();
+            characterNetworkmanager= GetComponent<CharacterNetworkManager>();
             animator = GetComponent<Animator>();
+            characterEffectsmanager = GetComponent<CharacterEffectsManager>();
+            characterAnimatorsmanager = GetComponent<CharacterAnimatorManager>();
         }
+
+        protected virtual void Start()
+        {
+            IgnoreMyOwnColliders();
+        }
+
         protected virtual void Update()
         {
+            animator.SetBool("isGrounded", isGrounded);
             if(IsOwner)
             {
-                characternetworkmanager.networkPosition.Value=transform.position;
-                characternetworkmanager.networkRotation.Value=transform.rotation;
+                characterNetworkmanager.networkPosition.Value=transform.position;
+                characterNetworkmanager.networkRotation.Value=transform.rotation;
             }
             else
             {
                 transform.position = Vector3.SmoothDamp
                     (transform.position, 
-                    characternetworkmanager.networkPosition.Value, 
-                    ref characternetworkmanager.networkPositionVelocity, 
-                    characternetworkmanager.networkPositionSmoothTime);
+                    characterNetworkmanager.networkPosition.Value, 
+                    ref characterNetworkmanager.networkPositionVelocity, 
+                    characterNetworkmanager.networkPositionSmoothTime);
                 transform.rotation = Quaternion.Slerp(
                     transform.rotation,
-                    characternetworkmanager.networkRotation.Value,
-                    characternetworkmanager.networkRotationSmoothTime);
+                    characterNetworkmanager.networkRotation.Value,
+                    characterNetworkmanager.networkRotationSmoothTime);
             }
         }
         protected virtual void LateUpdate()
@@ -51,6 +63,41 @@ namespace BL
 
         }
 
+        public virtual IEnumerator ProcessDeathEvent(bool manuallySelectDeathAnimation =false)
+        {
+            if(IsOwner)
+            {
+                characterNetworkmanager.currentHealth.Value = 0;
+                isDead.Value = true;
+            }
+            if(!manuallySelectDeathAnimation)
+            {
+                characterAnimatorsmanager.PlayerTargetActionAnimation("Dead_01", true);
+            }
+            yield return new WaitForSeconds(5);
+        }
+    
+        public virtual void ReviveCharacter()
+        {
 
+        }
+        protected virtual void IgnoreMyOwnColliders()
+        {
+            Collider characterControllerCollider =GetComponent<Collider>();
+            Collider[] damagebleCharacterColliders = GetComponentsInChildren<Collider>();
+            List<Collider> ignoreColliders = new List<Collider>();
+            foreach(var collider in damagebleCharacterColliders)
+            {
+                ignoreColliders.Add(collider);
+            }
+            ignoreColliders.Add(characterControllerCollider);
+            foreach(var collider in ignoreColliders)
+            {
+                foreach(var otherCollider in ignoreColliders)
+                {
+                    Physics.IgnoreCollision(collider, otherCollider,true);
+                }
+            }
+        }
     }
 }

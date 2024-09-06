@@ -17,18 +17,30 @@ namespace BL
         {
             character = GetComponent<CharacterManager>();
         }
+        protected virtual void Start()
+        {
+
+        }
         public int CalculateStaminaBasedOnEnduranceLevel(int endurance)
         {
-            float stamina = 0;
+            int stamina = 0;
             stamina = endurance * 10;
-            return Mathf.RoundToInt(stamina);
+            return stamina;
         }
+        public int CalculateHealthBasedOnVitalityLevel(int vitality)
+        {
+            int health = 0;
+            health = vitality * 20;
+            return health;
+        }
+
+
         public virtual void RegenerateStamina()
         {
             if (!character.IsOwner)
                 return;
 
-            if (character.characternetworkmanager.isSprinting.Value)
+            if (character.characterNetworkmanager.isSprinting.Value)
                 return;
 
             if (character.isPerformingActions)
@@ -36,13 +48,13 @@ namespace BL
             staminaRegenarationTimer += Time.deltaTime;
             if (staminaRegenarationTimer >= regenarationDelay)
             {
-                if (character.characternetworkmanager.currentStamina.Value < character.characternetworkmanager.maxStamina.Value)
+                if (character.characterNetworkmanager.currentStamina.Value < character.characterNetworkmanager.maxStamina.Value)
                 {
                     staminaTickTime = staminaTickTime + Time.deltaTime;
                     if (staminaTickTime >= 0.1)
                     {
                         staminaTickTime = 0;
-                        character.characternetworkmanager.currentStamina.Value += staminaRegenarationAmount;
+                        character.characterNetworkmanager.currentStamina.Value += staminaRegenarationAmount;
                     }
                 }
             }

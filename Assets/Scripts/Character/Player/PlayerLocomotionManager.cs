@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace BL
 {
@@ -18,16 +19,21 @@ namespace BL
         [SerializeField] float sprintingSpeed = 6.5f;
         [SerializeField] float rotationSpeed = 15;
         [SerializeField] float sprintingStaminaCost = 2.0f;
+        [Header("Jump")]
+        [SerializeField] float jumpStaminaCost = 25f;
+        [SerializeField] float jumpHeight = 1;
+        [SerializeField] float jumpForwardSpeed = 5f;
+        [SerializeField] float freeFallSpeed = 2f;
+        private Vector3 jumpDirection ;
         [Header("Dodge")]
         private Vector3 rollDirection;
         [SerializeField] float dodgeStaminaCost = 25f;
-        [SerializeField] float jumpStaminaCost = 25f;
         public void HandleAllMovement()
         {
-            //if(player.isPerformingActions) 
-            //    return;
             HandleAllGroundMovement();
             HandleRotation();
+            HandleJumpingMovement();
+            HandleFreeFallMovement();
         }
         public void HandleAllGroundMovement()
         {
@@ -77,15 +83,15 @@ namespace BL
             base.Update();
             if(player.IsOwner)
             {
-                player.characternetworkmanager.verticalMovement.Value = verticalMovement;
-                player.characternetworkmanager.horizontalMovement.Value = horizontalMovement;
-                player.characternetworkmanager.moveAmount.Value = moveAmount;
+                player.characterNetworkmanager.verticalMovement.Value = verticalMovement;
+                player.characterNetworkmanager.horizontalMovement.Value = horizontalMovement;
+                player.characterNetworkmanager.moveAmount.Value = moveAmount;
             }
             else
             {
-                moveAmount = player.characternetworkmanager.moveAmount.Value;
-                verticalMovement =player.characternetworkmanager.verticalMovement.Value;
-                horizontalMovement = player.characternetworkmanager.horizontalMovement.Value;
+                moveAmount = player.characterNetworkmanager.moveAmount.Value;
+                verticalMovement =player.characterNetworkmanager.verticalMovement.Value;
+                horizontalMovement = player.characterNetworkmanager.horizontalMovement.Value;
 
                 player.playerAnimatorManager.updateAnimatorMovementParameters(0, moveAmount, player.playerNetworkManager.isSprinting.Value);
             }
@@ -137,17 +143,34 @@ namespace BL
                 return;
             if (player.isJumping)
                 return;
-            if(player.isGrounded)
+            if (!player.isGrounded)
                 return;
-            player.playerAnimatorManager.PlayerTargetActionAnimation("Main_Jump_01",false);
+            player.playerAnimatorManager.PlayerTargetActionAnimation("Main_Jump_01", false);
 
             player.isJumping = true;
             player.playerNetworkManager.currentStamina.Value -= jumpStaminaCost;
-
+            jumpDirection = PlayerCamera.instance.cameraObject.transform.forward * PlayerInputManager.instance.verticalInput;
+            jumpDirection += PlayerCamera.instance.cameraObject.transform.right * PlayerInputManager.instance.horizontalInput;
+            jumpDirection.y = 0;
+            if (jumpDirection != Vector3.zero)
+            {
+                if (player.playerNetworkManager.isSprinting.Value)
+                {
+                    jumpDirection *= 1.5f;
+                }
+                else if (PlayerInputManager.instance.moveAmount > 0.5)
+                {
+                    jumpDirection *= 0.75f;
+                }
+                else if (PlayerInputManager.instance.moveAmount <= 0.5)
+                {
+                    jumpDirection *= 0.5f;
+                }
+            }
         }
         public void ApplyJumpingVelocity()
         {
-
+            yVelocity.y = Mathf.Sqrt(jumpHeight*-2 *gravityForce);
         }
         public void HandleSprinting()
         {
@@ -170,6 +193,24 @@ namespace BL
             if(player.playerNetworkManager.isSprinting.Value)
             {
                 player.playerNetworkManager.currentStamina.Value -= sprintingStaminaCost * Time.deltaTime;
+            }
+        }
+        public void HandleJumpingMovement()
+        {
+            if(player.isJumping)
+            {
+                player.charactercontroller.Move(jumpDirection * jumpForwardSpeed * Time.deltaTime);
+            }
+        }
+        public void HandleFreeFallMovement()
+        {
+            if(!player.isGrounded)
+            {
+                Vector3 freeFallDirection;
+                freeFallDirection = PlayerCamera.instance.transform.forward * PlayerInputManager.instance.verticalInput;
+                freeFallDirection += PlayerCamera.instance.transform.right * PlayerInputManager.instance.horizontalInput;
+                freeFallDirection.y = 0;
+                player.charactercontroller.Move(freeFallDirection * freeFallSpeed * Time.deltaTime);
             }
         }
     }

@@ -85,6 +85,7 @@ namespace BL
             { return worldSceneIndex; }
         public void AttempToCreateNewGame()
         {
+            Debug.Log("AttempToCreateNewGame");
             saveFileDataWritter = new SaveFileDataWritter();
             saveFileDataWritter.saveDataDirectoryPath = Application.persistentDataPath;
             //Check if we can create a new file
@@ -95,7 +96,8 @@ namespace BL
 
                 currentCharacterSlotBeingUsed = CharacterSlot.CharacterSlot_01;
                 currentCharacterData = new CharacterSaveData();
-                StartCoroutine(LoadWorldScene());
+                NewGame();
+
                 return;
             }
             saveFileDataWritter.saveFileName = DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(CharacterSlot.CharacterSlot_02); 
@@ -105,7 +107,7 @@ namespace BL
 
                 currentCharacterSlotBeingUsed = CharacterSlot.CharacterSlot_02;
                 currentCharacterData = new CharacterSaveData();
-                StartCoroutine(LoadWorldScene());
+                NewGame();
                 return;
             }
             saveFileDataWritter.saveFileName = DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(CharacterSlot.CharacterSlot_03);
@@ -114,11 +116,19 @@ namespace BL
 
                 currentCharacterSlotBeingUsed = CharacterSlot.CharacterSlot_03;
                 currentCharacterData = new CharacterSaveData();
-                StartCoroutine(LoadWorldScene());
+                NewGame();
                 return;
             }
+            //use save slot 1 for now if we have no slot
+            else
+            {
+                currentCharacterSlotBeingUsed = CharacterSlot.CharacterSlot_01;
+                currentCharacterData = new CharacterSaveData();
+                NewGame();
+                return;
 
-            TitleScreenManager.instance.DisplayNoFreeCharacterSlotsPopup();
+            }
+            //TitleScreenManager.instance.DisplayNoFreeCharacterSlotsPopup();
         }
         public void LoadGame()
         {
@@ -138,7 +148,11 @@ namespace BL
             saveFileDataWritter.saveFileName = saveFileName;
 
             player.SaveGameDataToCurrentCharacterData(ref currentCharacterData);
-
+            if(!player.playerNetworkManager.IsServer)
+            {
+                Debug.Log("client");
+                return; 
+            }
             saveFileDataWritter.CreateNewCharacterSaveFile(currentCharacterData);
         }
         public void DeleteGame(CharacterSlot characterSlot)
@@ -160,6 +174,12 @@ namespace BL
             characterSlot02 = saveFileDataWritter.LoadSaveFile();
             saveFileDataWritter.saveFileName = DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(CharacterSlot.CharacterSlot_03);
             characterSlot03 = saveFileDataWritter.LoadSaveFile();
+        }
+        private void NewGame()
+        {
+
+            SaveGame();
+            StartCoroutine(LoadWorldScene());
         }
     }
 }

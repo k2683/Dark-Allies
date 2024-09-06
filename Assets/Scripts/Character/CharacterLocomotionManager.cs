@@ -8,9 +8,9 @@ namespace BL
     {
         CharacterManager character;
         [Header("Ground Check & Jumping")]
-        [SerializeField] float gravityForce = -5.5f;
+        [SerializeField] protected float gravityForce = -95.5f;
         [SerializeField] LayerMask groundLayer;
-        [SerializeField] float groundCheckSphereRadius = 1;
+        [SerializeField] float groundCheckSphereRadius = 0.3f;
         [SerializeField] protected Vector3 yVelocity;
         [SerializeField] protected float groundedYVelocity = -20;
         [SerializeField] protected float fallStartYVelocity = -5;
@@ -23,9 +23,9 @@ namespace BL
         protected virtual void Update()
         {
             HandleGroundCheck();
-            if(character.isGrounded)
+            if (character.isGrounded)
             {
-                if(yVelocity.y < 0)
+                if (yVelocity.y < 0)
                 {
                     inAirTimer = 0;
                     fallingVelocityHAsBeenSet = false;
@@ -34,21 +34,27 @@ namespace BL
             }
             else
             {
-                if(!character.isJumping && !fallingVelocityHAsBeenSet)
+                if (!character.isJumping && !fallingVelocityHAsBeenSet)
                 {
                     fallingVelocityHAsBeenSet = true;
                     yVelocity.y = fallStartYVelocity;
                 }
                 inAirTimer += Time.deltaTime;
+                character.animator.SetFloat("inAirTime", inAirTimer);
                 yVelocity.y += gravityForce * Time.deltaTime;
-                character.charactercontroller.Move(yVelocity * Time.deltaTime);
             }
+            //Debug.Log("LOCOyVelocity" + yVelocity);
+            character.charactercontroller.Move(yVelocity * Time.deltaTime);
+
+
         }
         protected void HandleGroundCheck()
         {
             character.isGrounded = Physics.CheckSphere(character.transform.position, groundCheckSphereRadius, groundLayer);
         }
+
         //Only shows in editor
+        
         protected void OnDrawGizmosSelected()
         {
             Gizmos.DrawSphere(character.transform.position, groundCheckSphereRadius);

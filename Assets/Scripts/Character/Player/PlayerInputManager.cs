@@ -89,6 +89,7 @@ namespace BL
             HandleCameraMovementInput();
             HandleDodgeInput();
             HandleSprinting();
+            HandleJumpInput();
         }
         private void HandlePlayerMovementInput()
         {
@@ -160,7 +161,11 @@ namespace BL
         }
         private void HandleJumpInput()
         {
-
+            if(jumpInput)
+            {
+                jumpInput = false;
+                player.playerLocomotionManager.AttemptToPerformJump();
+            }
         }
     }
 }

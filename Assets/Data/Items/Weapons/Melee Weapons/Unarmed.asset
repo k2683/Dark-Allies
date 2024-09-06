@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c173554bd11f50348949b73d83095047, type: 3}
+  m_Name: Unarmed
+  m_EditorClassIdentifier: 
+  itemName: 
+  itemIcon: 
+  itemDescription: 
+  itemID: 0
+  weaponModel: {fileID: 7721010846758018054, guid: b62752ab38fda4e43b521b1f632dc7e1, type: 3}
+  strengthREQ: 0
+  dexREQ: 0
+  intREQ: 0
+  faithREQ: 0
+  physicalDamage: 10
+  magicDamage: 0
+  fireDamage: 0
+  holyDamage: 0
+  lightningDamage: 0
+  poiseDamage: 0
+  baseStaminaCost: 10

@@ -42,7 +42,7 @@ namespace BL
             character.canRotate = canRotate;
             character.canMove = canMove;
 
-            character.characternetworkmanager.NotifyTheServerOfActionAnimationServerRpc(NetworkManager.Singleton.LocalClientId, targetAnimation, applyRootMotion);
+            character.characterNetworkmanager.NotifyTheServerOfActionAnimationServerRpc(NetworkManager.Singleton.LocalClientId, targetAnimation, applyRootMotion);
         }
     }
 }

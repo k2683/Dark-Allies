@@ -11,6 +11,7 @@ namespace BL
         [Header("NETWORK JOIN")]
         [SerializeField] bool startGameAsClient;
         [HideInInspector] public PlayerUIHudManager playerUIHudManager;
+        [HideInInspector] public PlayerUIPopUpManager playerUIPopUpManager;
         public void Awake()
         {
             if (instance == null)
@@ -18,6 +19,7 @@ namespace BL
             else
                 Destroy(gameObject);
             playerUIHudManager = GetComponentInChildren<PlayerUIHudManager>();
+            playerUIPopUpManager = GetComponentInChildren<PlayerUIPopUpManager>();
         }
         private void Start()
         {
