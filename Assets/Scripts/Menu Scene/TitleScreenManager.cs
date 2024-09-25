@@ -8,97 +8,121 @@ namespace BL
 {
     public class TitleScreenManager : MonoBehaviour
     {
-        public static TitleScreenManager instance;
+        public static TitleScreenManager Instance;
+
         [Header("Menus")]
         [SerializeField] GameObject titleScreenMainMenu;
         [SerializeField] GameObject titleScreenLoadMenu;
+
         [Header("Buttons")]
-        [SerializeField] Button mainMenuNewGameButton;
         [SerializeField] Button loadMenuReturnButton;
         [SerializeField] Button mainMenuLoadGameButton;
+        [SerializeField] Button mainMenuNewGameButton;
         [SerializeField] Button deleteCharacterPopUpConfirmButton;
+
         [Header("Pop Ups")]
         [SerializeField] GameObject noCharacterSlotsPopUp;
         [SerializeField] Button noCharacterSlotsOkayButton;
-        public GameObject deleteCharacterSlotPopup;
+        [SerializeField] GameObject deleteCharacterSlotPopUp;
+        [SerializeField] GameObject noSlotReminder;
         [Header("Character Slots")]
         public CharacterSlot currentSelectedSlot = CharacterSlot.NO_SLOT;
-        
-        [Header("Title Screen Inputs")]
-        [SerializeField] bool deleteCharacterSlot = false;
-        public GameObject onSelectedDeletedSaveButton;
-        public GameObject onSelectedDeletedDeletingButton;
+
         private void Awake()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = this;
+                Instance = this;
             }
             else
             {
                 Destroy(gameObject);
             }
         }
+
         public void StartNetworkAsHost()
         {
             NetworkManager.Singleton.StartHost();
+
         }
+
         public void StartNewGame()
         {
-            WorldSaveGameManager.Instance.AttempToCreateNewGame();
+            WorldSaveGameManager.instance.AttemptToCreateNewGame();
         }
+
         public void OpenLoadGameMenu()
         {
+            //  CLOSE MAIN MENU
             titleScreenMainMenu.SetActive(false);
+
+            //  OPEN LOAD MENU
             titleScreenLoadMenu.SetActive(true);
+
+            //  SELECT THE RETURN BUTTON FIRST
+            loadMenuReturnButton.Select();
         }
+
         public void CloseLoadGameMenu()
         {
+            //  CLOSE LOAD MENU
             titleScreenLoadMenu.SetActive(false);
+
+            //  OPEN MAIN MENU
             titleScreenMainMenu.SetActive(true);
+
+            //  SELECT THE LOAD BUTTON
             mainMenuLoadGameButton.Select();
         }
-        public void DisplayNoFreeCharacterSlotsPopup()
+
+        public void DisplayNoFreeCharacterSlotsPopUp()
         {
             noCharacterSlotsPopUp.SetActive(true);
+            noSlotReminder.SetActive(true);
         }
+
         public void CloseNoFreeCharacterSlotsPopUp()
         {
             noCharacterSlotsPopUp.SetActive(false);
-
         }
-        public void SelectedCharacterSlot(CharacterSlot characterSlot)
+
+        //  CHARACTER SLOTS
+
+        public void SelectCharacterSlot(CharacterSlot characterSlot)
         {
             currentSelectedSlot = characterSlot;
-        }
-        
-        public void AttempToDeleteCharacterSlot()
-        {
-            if(currentSelectedSlot != CharacterSlot.NO_SLOT)
-            {
-                deleteCharacterSlotPopup.SetActive(true);
-            }
-        }
-        public void CloseDeleteCharacterPopUp()
-        {
-            deleteCharacterSlotPopup.SetActive(false);
-        }
-        
-        public void DeleteCharacterSlot()
-        {
-            deleteCharacterSlotPopup.SetActive(false);
-            WorldSaveGameManager.Instance.DeleteGame(currentSelectedSlot);
-            onSelectedDeletedSaveButton.SetActive(false);
-            onSelectedDeletedDeletingButton.SetActive(false);
-
-
-            //onSelectedDeletedSaveButton.GameObject.SetActive(false);
         }
 
         public void SelectNoSlot()
         {
             currentSelectedSlot = CharacterSlot.NO_SLOT;
+        }
 
+        public void AttemptToDeleteCharacterSlot()
+        {
+            if (currentSelectedSlot != CharacterSlot.NO_SLOT)
+            {
+                deleteCharacterSlotPopUp.SetActive(true);
+                deleteCharacterPopUpConfirmButton.Select();
+            }
+        }
+
+        public void DeleteCharacterSlot()
+        {
+            deleteCharacterSlotPopUp.SetActive(false);
+            WorldSaveGameManager.instance.DeleteGame(currentSelectedSlot);
+
+            //  WE DISABLE AND THEN ENABLE THE LOAD MENU, TO REFRESH THE SLOTS (The deleted slots will now become inactive)
+            titleScreenLoadMenu.SetActive(false);
+            titleScreenLoadMenu.SetActive(true);
+
+            loadMenuReturnButton.Select();
+        }
+
+        public void CloseDeleteCharacterPopUp()
+        {
+            deleteCharacterSlotPopUp.SetActive(false);
+            loadMenuReturnButton.Select();
         }
     }
 }

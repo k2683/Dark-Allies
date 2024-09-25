@@ -14,7 +14,7 @@ namespace BL
             if (deleteCharacterSlot)
             {
                 deleteCharacterSlot = false;
-                TitleScreenManager.instance.AttempToDeleteCharacterSlot();
+                TitleScreenManager.Instance.AttemptToDeleteCharacterSlot();
             }
         }
 

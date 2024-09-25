@@ -6,5 +6,6 @@ namespace BL
 {
     public class CharacterInventoryManager : MonoBehaviour
     {
+
     }
 }

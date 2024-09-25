@@ -24,7 +24,7 @@ namespace BL
             saveFileWritter.saveDataDirectoryPath = Application.persistentDataPath;
             if (characterSlot == CharacterSlot.CharacterSlot_01)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if (saveFileWritter.CheckToSeeIfFileExists())
                 {
                     gameObject.SetActive(true);
@@ -38,7 +38,7 @@ namespace BL
             }
             else if (characterSlot == CharacterSlot.CharacterSlot_02)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if (saveFileWritter.CheckToSeeIfFileExists())
                 {
                     gameObject.SetActive(true);
@@ -52,7 +52,7 @@ namespace BL
             }
             else if (characterSlot == CharacterSlot.CharacterSlot_03)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if (saveFileWritter.CheckToSeeIfFileExists())
                 {
                     gameObject.SetActive(true);
@@ -69,10 +69,10 @@ namespace BL
         {
             if (characterSlot != CharacterSlot.NO_SLOT)
             {
-                TitleScreenManager.instance.currentSelectedSlot = characterSlot;
+                TitleScreenManager.Instance.currentSelectedSlot = characterSlot;
                 deleteCharacterSlotPopup.SetActive(true);
-                TitleScreenManager.instance.onSelectedDeletedDeletingButton = correspondingDeleteSlot;
-                TitleScreenManager.instance.onSelectedDeletedSaveButton = correspondingSaveSlot;
+                //TitleScreenManager.Instance.onSelectedDeletedDeletingButton = correspondingDeleteSlot;
+                //TitleScreenManager.Instance.onSelectedDeletedSaveButton = correspondingSaveSlot;
 
             }
         }

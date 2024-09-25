@@ -1,35 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using Unity.Netcode;
 
 namespace BL
 {
     public class CharacterManager : NetworkBehaviour
     {
-        [Header("status")]
-        public NetworkVariable<bool> isDead = new NetworkVariable<bool>(false,NetworkVariableReadPermission.Everyone,NetworkVariableWritePermission.Owner);
-        [HideInInspector] public CharacterController charactercontroller;
+        [Header("Status")]
+        public NetworkVariable<bool> isDead = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
+        [HideInInspector] public CharacterController characterController;
         [HideInInspector] public Animator animator;
-        [HideInInspector] public CharacterNetworkManager characterNetworkmanager;
-        [HideInInspector] public CharacterEffectsManager characterEffectsmanager;
-        [HideInInspector] public CharacterAnimatorManager characterAnimatorsmanager;
+
+        [HideInInspector] public CharacterNetworkManager characterNetworkManager;
+        [HideInInspector] public CharacterEffectsManager characterEffectsManager;
+        [HideInInspector] public CharacterAnimatorManager characterAnimatorManager;
+        [HideInInspector] public CharacterCombatManeger characterCombatManager;
+        [HideInInspector] public CharacterSoundFXManager characterSoundFXManager;
+        [HideInInspector] public CharacterLocomotionManager characterLocomotionManager;
+
+        [Header("Character Group")]
+        public CharacterGroup characterGroup;
+
         [Header("Flags")]
-        public bool isPerformingActions = false;
-        public bool isJumping = false;
-        public bool isGrounded = true;
-        public bool canRotate = true;
-        public bool canMove = true;
-        public bool applyRootMotion = false;
+        public bool isPerformingAction = false;
+
         protected virtual void Awake()
         {
             DontDestroyOnLoad(this);
-            charactercontroller = GetComponent<CharacterController>();
-            characterNetworkmanager= GetComponent<CharacterNetworkManager>();
+
+            characterController = GetComponent<CharacterController>();
             animator = GetComponent<Animator>();
-            characterEffectsmanager = GetComponent<CharacterEffectsManager>();
-            characterAnimatorsmanager = GetComponent<CharacterAnimatorManager>();
+
+            characterNetworkManager = GetComponent<CharacterNetworkManager>();
+            characterEffectsManager = GetComponent<CharacterEffectsManager>();
+            characterAnimatorManager = GetComponent<CharacterAnimatorManager>();
+            characterCombatManager = GetComponent<CharacterCombatManeger>();
+            characterSoundFXManager = GetComponent<CharacterSoundFXManager>();
+            characterLocomotionManager = GetComponent<CharacterLocomotionManager>();
         }
 
         protected virtual void Start()
@@ -39,63 +48,112 @@ namespace BL
 
         protected virtual void Update()
         {
-            animator.SetBool("isGrounded", isGrounded);
-            if(IsOwner)
+            animator.SetBool("isGrounded", characterLocomotionManager.isGrounded);
+
+            //  IF THIS CHARACTER IS BEING CONTROLLED FROM OUR SIDE, THEN ASSIGN ITS NETWORK POSITION TO THE POSITION OF OUR TRANSFORM
+            if (IsOwner)
             {
-                characterNetworkmanager.networkPosition.Value=transform.position;
-                characterNetworkmanager.networkRotation.Value=transform.rotation;
+                characterNetworkManager.networkPosition.Value = transform.position;
+                characterNetworkManager.networkRotation.Value = transform.rotation;
             }
+            //  IF THIS CHARACTER IS BEING CONTROLLED FROM ELSE WHERE, THEN ASSIGN ITS POSITION HERE LOCALLY BY THE POSITION OF ITS NETWORK TRANSFORM
             else
             {
+                //  Position
                 transform.position = Vector3.SmoothDamp
-                    (transform.position, 
-                    characterNetworkmanager.networkPosition.Value, 
-                    ref characterNetworkmanager.networkPositionVelocity, 
-                    characterNetworkmanager.networkPositionSmoothTime);
-                transform.rotation = Quaternion.Slerp(
-                    transform.rotation,
-                    characterNetworkmanager.networkRotation.Value,
-                    characterNetworkmanager.networkRotationSmoothTime);
+                    (transform.position,
+                    characterNetworkManager.networkPosition.Value,
+                    ref characterNetworkManager.networkPositionVelocity,
+                    characterNetworkManager.networkPositionSmoothTime);
+                //  Rotation
+                transform.rotation = Quaternion.Slerp
+                    (transform.rotation,
+                    characterNetworkManager.networkRotation.Value,
+                    characterNetworkManager.networkRotationSmoothTime);
             }
         }
+
+        protected virtual void FixedUpdate()
+        {
+
+        }
+
         protected virtual void LateUpdate()
         {
 
         }
 
-        public virtual IEnumerator ProcessDeathEvent(bool manuallySelectDeathAnimation =false)
+        public override void OnNetworkSpawn()
         {
-            if(IsOwner)
-            {
-                characterNetworkmanager.currentHealth.Value = 0;
-                isDead.Value = true;
-            }
-            if(!manuallySelectDeathAnimation)
-            {
-                characterAnimatorsmanager.PlayerTargetActionAnimation("Dead_01", true);
-            }
-            yield return new WaitForSeconds(5);
+            Debug.Log("gulu1");
+            base.OnNetworkSpawn();
+
+            animator.SetBool("isMoving", characterNetworkManager.isMoving.Value);
+            characterNetworkManager.isMoving.OnValueChanged += characterNetworkManager.OnIsMovingChanged;
+            Debug.Log("gulu2");
+
         }
-    
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+
+            characterNetworkManager.isMoving.OnValueChanged -= characterNetworkManager.OnIsMovingChanged;
+        }
+
+        public virtual IEnumerator ProcessDeathEvent(bool manuallySelectDeathAnimation = false)
+        {
+            if (IsOwner)
+            {
+                characterNetworkManager.currentHealth.Value = 0;
+                isDead.Value = true;
+
+                //  RESET ANY FLAGS HERE THAT NEED TO BE RESET
+                //  NOTHING YET
+
+                //  IF WE ARE NOT GROUNDED, PLAY AN AERIAL DEATH ANIMATION
+
+                if (!manuallySelectDeathAnimation)
+                {
+                    characterAnimatorManager.PlayTargetActionAnimation("Dead_01", true);
+                }
+            }
+
+            //  PLAY SOME DEATH SFX
+
+            yield return new WaitForSeconds(5);
+
+            //  AWARD PLAYERS WITH RUNES
+
+            //  DISABLE CHARACTER
+        }
+
         public virtual void ReviveCharacter()
         {
 
         }
+
         protected virtual void IgnoreMyOwnColliders()
         {
-            Collider characterControllerCollider =GetComponent<Collider>();
-            Collider[] damagebleCharacterColliders = GetComponentsInChildren<Collider>();
+            Collider characterControllerCollider = GetComponent<Collider>();
+            Collider[] damageableCharacterColliders = GetComponentsInChildren<Collider>();
             List<Collider> ignoreColliders = new List<Collider>();
-            foreach(var collider in damagebleCharacterColliders)
+
+            //  ADDS ALL OF OUR DAMAGEABLE CHARACTER COLLIDERS, TO THE LIST THAT WILL BE USED TO IGNORE COLLISIONS
+            foreach (var collider in damageableCharacterColliders)
             {
                 ignoreColliders.Add(collider);
             }
+
+            //  ADDS OUR CHARACTER CONTROLLER COLLIDER TO THE LIST THAT WILL BE USED TO IGNORE COLLISIONS
             ignoreColliders.Add(characterControllerCollider);
-            foreach(var collider in ignoreColliders)
+
+            //  GOES THROUGH EVERY COLLIDER ON THE LIST, AND IGNORES COLLISION WITH EACH OTHER
+            foreach (var collider in ignoreColliders)
             {
-                foreach(var otherCollider in ignoreColliders)
+                foreach (var otherCollider in ignoreColliders)
                 {
-                    Physics.IgnoreCollision(collider, otherCollider,true);
+                    Physics.IgnoreCollision(collider, otherCollider, true);
                 }
             }
         }

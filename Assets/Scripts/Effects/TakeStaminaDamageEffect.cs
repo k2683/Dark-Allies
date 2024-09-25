@@ -4,20 +4,21 @@ using UnityEngine;
 
 namespace BL
 {
-    [CreateAssetMenu(menuName ="Character Effects/Instant Effects/Tke Stamina Damage")]
-    public class TakeStaminaDamageEffect : InstantCharacterEffects
+    [CreateAssetMenu(menuName = "Character Effects/Instant Effects/Take Stamina Damage")]
+    public class TakeStaminaDamageEffect : InstantCharacterEffect
     {
         public float staminaDamage;
+
         public override void ProcessEffect(CharacterManager character)
         {
             CalculateStaminaDamage(character);
         }
+
         private void CalculateStaminaDamage(CharacterManager character)
         {
-            if(character.IsOwner)
+            if (character.IsOwner)
             {
-                
-                character.characterNetworkmanager.currentStamina.Value -= staminaDamage;
+                character.characterNetworkManager.currentStamina.Value -= staminaDamage;
             }
         }
     }

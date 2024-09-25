@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Straight Sword
   m_EditorClassIdentifier: 
   itemName: Straight Sword
-  itemIcon: 
+  itemIcon: {fileID: 21300000, guid: 3140933da0d376b43a2824e4c04f8970, type: 3}
   itemDescription: 'A Straight Sword
 
 '
-  itemID: 0
+  itemID: 1
   weaponModel: {fileID: 6990737424244364296, guid: 4eb9992407091974683e28ec675c778e, type: 3}
   strengthREQ: 0
   dexREQ: 10
@@ -29,4 +29,15 @@ MonoBehaviour:
   holyDamage: 0
   lightningDamage: 0
   poiseDamage: 25
+  light_Attack_01_Modifier: 1.1
+  light_Attack_02_Modifier: 1.2
+  heavy_Attack_01_Modifier: 1.4
+  heavy_Attack_02_Modifier: 1.6
+  charge_Attack_01_Modifier: 2
+  charge_Attack_02_Modifier: 2.2
   baseStaminaCost: 20
+  lightAttackStaminaCostMultiplier: 0.9
+  oh_RB_Action: {fileID: 11400000, guid: 42356b9885577d54d8d7cffba5e7d804, type: 2}
+  oh_RT_Action: {fileID: 11400000, guid: a5b786fdce554e446b21aea43fac621b, type: 2}
+  whooshes:
+  - {fileID: 8300000, guid: 0e9bca6dd55d7e541a865752da6415f5, type: 3}

@@ -24,10 +24,10 @@ namespace BL
             saveFileWritter.saveDataDirectoryPath = Application.persistentDataPath;
             if(characterSlot == CharacterSlot.CharacterSlot_01)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if(saveFileWritter.CheckToSeeIfFileExists())
                 {
-                    characterName.text = WorldSaveGameManager.Instance.characterSlot01.characterName;
+                    characterName.text = WorldSaveGameManager.instance.characterSlot01.characterName;
                 }
                 else
                 {
@@ -37,10 +37,10 @@ namespace BL
             }
             else if (characterSlot == CharacterSlot.CharacterSlot_02)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if (saveFileWritter.CheckToSeeIfFileExists())
                 {
-                    characterName.text = WorldSaveGameManager.Instance.characterSlot02.characterName;
+                    characterName.text = WorldSaveGameManager.instance.characterSlot02.characterName;
                 }
                 else
                 {
@@ -50,10 +50,10 @@ namespace BL
             }
             else if (characterSlot == CharacterSlot.CharacterSlot_03)
             {
-                saveFileWritter.saveFileName = WorldSaveGameManager.Instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
+                saveFileWritter.saveFileName = WorldSaveGameManager.instance.DecideCharacterFileNameBasedOnCharacterSlotBeingUsed(characterSlot);
                 if (saveFileWritter.CheckToSeeIfFileExists())
                 {
-                    characterName.text = WorldSaveGameManager.Instance.characterSlot03.characterName;
+                    characterName.text = WorldSaveGameManager.instance.characterSlot03.characterName;
                 }
                 else
                 {
@@ -67,16 +67,16 @@ namespace BL
         }
         public void LoadGameFromCharacterSlot()
         {
-            WorldSaveGameManager.Instance.currentCharacterSlotBeingUsed = characterSlot;
-            WorldSaveGameManager.Instance.LoadGame();
+            WorldSaveGameManager.instance.currentCharacterSlotBeingUsed = characterSlot;
+            WorldSaveGameManager.instance.LoadGame();
         }
         public void SelectedCurrentSlot()
         {
-            TitleScreenManager.instance.SelectedCharacterSlot(characterSlot);
+            TitleScreenManager.Instance.SelectCharacterSlot(characterSlot);
         }
         public void DeleteSaveSlot()
         {
-            WorldSaveGameManager.Instance.DeleteGame(characterSlot);
+            WorldSaveGameManager.instance.DeleteGame(characterSlot);
         }
     }
 }

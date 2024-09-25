@@ -6,25 +6,33 @@ namespace BL
 {
     public class WorldCharacterEffectsManager : MonoBehaviour
     {
-        public static WorldCharacterEffectsManager Instance;
+        public static WorldCharacterEffectsManager instance;
+
+        [Header("VFX")]
+        public GameObject bloodSplatterVFX;
+
         [Header("Damage")]
         public TakeDamageEffect takeDamageEffect;
-        [SerializeField] List<InstantCharacterEffects> instantEffects;
+
+        [SerializeField] List<InstantCharacterEffect> instantEffects;
+
         private void Awake()
         {
-            if (Instance == null)
+            if (instance == null)
             {
-                Instance = this;
+                instance = this;
             }
             else
             {
                 Destroy(gameObject);
             }
+
             GenerateEffectIDs();
         }
+
         private void GenerateEffectIDs()
         {
-            for(int i=0;i<instantEffects.Count; ++i)
+            for (int i = 0; i < instantEffects.Count; i++)
             {
                 instantEffects[i].instantEffectID = i;
             }

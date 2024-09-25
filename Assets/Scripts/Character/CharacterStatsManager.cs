@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 namespace BL
@@ -8,65 +7,83 @@ namespace BL
     public class CharacterStatsManager : MonoBehaviour
     {
         CharacterManager character;
+
         [Header("Stamina Regeneration")]
-        [SerializeField] float staminaRegenarationAmount = 2.0f;
-        private float staminaRegenarationTimer = 0f;
-        private float staminaTickTime = 0f;
-        [SerializeField] float regenarationDelay = 2.0f;
+        [SerializeField] float staminaRegenerationAmount = 2;
+        private float staminaRegenerationTimer = 0;
+        private float staminaTickTimer = 0;
+        [SerializeField] float staminaRegenerationDelay = 2;
+
         protected virtual void Awake()
         {
             character = GetComponent<CharacterManager>();
         }
+
         protected virtual void Start()
         {
 
         }
-        public int CalculateStaminaBasedOnEnduranceLevel(int endurance)
-        {
-            int stamina = 0;
-            stamina = endurance * 10;
-            return stamina;
-        }
+
         public int CalculateHealthBasedOnVitalityLevel(int vitality)
         {
-            int health = 0;
-            health = vitality * 20;
-            return health;
+            float health = 0;
+
+            //  CREATE AN EQUATION FOR HOW YOU WANT YOUR STAMINA TO BE CALCULATED
+
+            health = vitality * 15;
+
+            return Mathf.RoundToInt(health);
         }
 
+        public int CalculateStaminaBasedOnEnduranceLevel(int endurance)
+        {
+            float stamina = 0;
+
+            //  CREATE AN EQUATION FOR HOW YOU WANT YOUR STAMINA TO BE CALCULATED
+
+            stamina = endurance * 10;
+
+            return Mathf.RoundToInt(stamina);
+        }
 
         public virtual void RegenerateStamina()
         {
+            //  ONLY OWNERS CAN EDIT THEIR NETWORK VARAIBLES
             if (!character.IsOwner)
                 return;
 
-            if (character.characterNetworkmanager.isSprinting.Value)
+            //  WE DO NOT WANT TO REGENERATE STAMINA IF WE ARE USING IT
+            if (character.characterNetworkManager.isSprinting.Value)
                 return;
 
-            if (character.isPerformingActions)
+            if (character.isPerformingAction)
                 return;
-            staminaRegenarationTimer += Time.deltaTime;
-            if (staminaRegenarationTimer >= regenarationDelay)
+
+            staminaRegenerationTimer += Time.deltaTime;
+
+            if (staminaRegenerationTimer >= staminaRegenerationDelay)
             {
-                if (character.characterNetworkmanager.currentStamina.Value < character.characterNetworkmanager.maxStamina.Value)
+                if (character.characterNetworkManager.currentStamina.Value < character.characterNetworkManager.maxStamina.Value)
                 {
-                    staminaTickTime = staminaTickTime + Time.deltaTime;
-                    if (staminaTickTime >= 0.1)
+                    staminaTickTimer += Time.deltaTime;
+
+                    if (staminaTickTimer >= 0.1)
                     {
-                        staminaTickTime = 0;
-                        character.characterNetworkmanager.currentStamina.Value += staminaRegenarationAmount;
+                        staminaTickTimer = 0;
+                        character.characterNetworkManager.currentStamina.Value += staminaRegenerationAmount;
                     }
                 }
             }
         }
 
-        public virtual void ResetStaminaRegenTimer(float previousStaminaAmount,float currentStaminaAmount)
+        public virtual void ResetStaminaRegenTimer(float previousStaminaAmount, float currentStaminaAmount)
         {
-            if(currentStaminaAmount < previousStaminaAmount)
+            //  WE ONLY WANT TO RESET THE REGENERATION IF THE ACTION USED STAMINA
+            //  WE DONT WANT TO RESET THE REGENERATION IF WE ARE ALREADY REGENERATING STAMINA
+            if (currentStaminaAmount < previousStaminaAmount)
             {
-                staminaRegenarationTimer = 0;
+                staminaRegenerationTimer = 0;
             }
-            //staminaRegenarationTimer = regenarationDelay;
         }
     }
 }

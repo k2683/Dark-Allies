@@ -6,8 +6,8 @@ namespace BL
 {
     public class PlayerEffectsManager : CharacterEffectsManager
     {
-        [Header("Debug")]
-        [SerializeField] InstantCharacterEffects effectToTest;
+        [Header("Debug Delete Later")]
+        [SerializeField] InstantCharacterEffect effectToTest;
         [SerializeField] bool processEffect = false;
 
         private void Update()
@@ -15,7 +15,7 @@ namespace BL
             if (processEffect)
             {
                 processEffect = false;
-                InstantCharacterEffects effect = Instantiate(effectToTest) ;
+                InstantCharacterEffect effect = Instantiate(effectToTest);
                 ProcessInstantEffect(effect);
             }
         }
